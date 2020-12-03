@@ -5,18 +5,18 @@ header-img: img/home-bg-o.jpg
 email: kenzoyan@foxmail.com
 description: "Welcome to my little world"
 keyword: "Book Movie Music"
-url: "https://kenzoyanblog.github.io"              # your host, for absolute URL
+url: "https://kenzoyan.github.io"              # your host, for absolute URL
 baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 
 
 # SNS settings
 RSS: false
-#weibo_username:     yanoorock
-#zhihu_username:     kenzoyan
+#weibo_username:    
+#zhihu_username:     
 github_username:    kenzoyan
-#twitter_username:  huxpro
-#facebook_username:  huxpro
+#twitter_username:  
+#facebook_username:  
 
 
 
