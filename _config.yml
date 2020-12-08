@@ -5,7 +5,7 @@ header-img: img/home-bg.jpg
 email: kenzoyan@foxmail.com
 description: "Welcome to my little world"
 keyword: "Book Movie Music"
-url: "https://kenzoyan.github.io"              # your host, for absolute URL
+url: "https://kenzoyan.io"              # your host, for absolute URL
 baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 
