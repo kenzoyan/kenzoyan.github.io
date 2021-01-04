@@ -13,7 +13,7 @@ tags:
 
 ## What is Game of Life
 
-![RGOL](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ikea.com%2Fmx%2Fen%2Fp%2Fsmycka-artificial-flower-rose-red-60333586%2F&psig=AOvVaw0S4h6w-CYcnulhh5XUWdPv&ust=1609866311009000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCNj427_hgu4CFQAAAAAdAAAAABAD)
+![RGOL](\img\in-post\GOL\GOL (1).JPG)
 
 GoL是70年代就提出了一种自发式游戏，有了一个起始状态后会自己在既定的规则一直演化下去。
 
@@ -25,7 +25,7 @@ GoL是70年代就提出了一种自发式游戏，有了一个起始状态后会
 >
 > Births. Each dead cell with exactly 3 neighbors become a live cell. 
 
-![GOL Rule](..\img\in-post\GOL\GOL (3).JPG)
+![GOL Rule](\img\in-post\GOL\GOL (3).JPG)
 
 ---
 
@@ -37,7 +37,7 @@ GoL是70年代就提出了一种自发式游戏，有了一个起始状态后会
 
 ！！ 有许多个起始图可以得到同一个结束图，所以我们的目标是只要找到一个满足条件的起始图就可以。 **所以在进行验证时，不能使用起始图对比验证，因为就算不一样也可能是正确的。我们需要将预测的起始图按照规则变化到唯一的结束状态图进行对比验证**。
 
-![RGOL](..\in-post\GOL\GOL (4).JPG)
+![RGOL](\in-post\GOL\GOL (4).JPG)
 
 最开始我们就想利用最基本的做法，机器学习、神经网络之类的去做，但是好像根本没多少效果，而且没有仔细思考为什么这么用或者该用啥模型，胡乱用。感觉很不好。 之后我们在kaggle看到别人的解答看到了SAT Solver解答，去研究了一下，完全从机器学习、数据科学这一方面变成了算法解释问题。
 
@@ -61,11 +61,11 @@ SAT--> Boolean Satisfiability Problem
 
 
 
-![RGOL](..\img\in-post\GOL\GOL (6).JPG)
+![RGOL](\img\in-post\GOL\GOL (6).JPG)
 
 
 
-![RGOL](..\img\in-post\GOL\GOL (7).JPG)
+![RGOL](\img\in-post\GOL\GOL (7).JPG)
 
 ---
 
@@ -142,19 +142,19 @@ SAT--> Boolean Satisfiability Problem
 	    return res, opt1, opt2
 '''
 
-![RGOL](..\img\in-post\GOL\GOL (8).JPG)
+![RGOL](\img\in-post\GOL\GOL (8).JPG)
 
 
 
 **一个句子规则转化为CNF：**
 
-![RGOL](..\img\in-post\GOL\GOL (9).JPG)
+![RGOL](\img\in-post\GOL\GOL (9).JPG)
 
 
 
 **在一步中的整个过程，以一个5x5的board举例子。**
 
-![process](..\img\in-post\GOL\GOL (10).JPG)
+![process](\img\in-post\GOL\GOL (10).JPG)
 
 
 
@@ -168,19 +168,19 @@ SAT--> Boolean Satisfiability Problem
 
 使用的是最基本的U-net的结构，但是效果很不好。
 
-![U-net](..\img\in-post\GOL\GOL (11).JPG)
+![U-net](\img\in-post\GOL\GOL (11).JPG)
 
 
 
 **Workflow of the Combined Model.**
 
-![workflow](..\img\in-post\GOL\GOL (13).JPG)
+![workflow](\img\in-post\GOL\GOL (13).JPG)
 
 
 
 **Last part is about the future work, which will never work in the future !**
 
-![Future Work](..\img\in-post\GOL\GOL (15).JPG)
+![Future Work](\img\in-post\GOL\GOL (15).JPG)
 
 
 
