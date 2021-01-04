@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "Solve Rev-GoL problem based on SAT"
-subtitle:   "aaa"
+subtitle:   "First Try"
 date:       2020-12-30 19:00:00
 author:     "Kenzo"
 header-img: "img/GOL-header.jpg"
