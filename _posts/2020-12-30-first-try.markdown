@@ -13,7 +13,7 @@ tags:
 
 ## What is Game of Life
 
-![RGOL](..\img\in-post\GOL\GOL (1).JPG)
+![RGOL](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ikea.com%2Fmx%2Fen%2Fp%2Fsmycka-artificial-flower-rose-red-60333586%2F&psig=AOvVaw0S4h6w-CYcnulhh5XUWdPv&ust=1609866311009000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCNj427_hgu4CFQAAAAAdAAAAABAD)
 
 GoL是70年代就提出了一种自发式游戏，有了一个起始状态后会自己在既定的规则一直演化下去。
 
