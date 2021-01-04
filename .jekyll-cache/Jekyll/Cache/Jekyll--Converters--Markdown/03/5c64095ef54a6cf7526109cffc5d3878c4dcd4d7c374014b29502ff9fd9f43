@@ -1,0 +1,154 @@
+I"v<h2 id="what-is-game-of-life">What is Game of Life</h2>
+
+<p><img src="..\img\in-post\GOL\GOL (1).JPG" alt="RGOL" /></p>
+
+<p>GoL是70年代就提出了一种自发式游戏，有了一个起始状态后会自己在既定的规则一直演化下去。</p>
+
+<p>规则很简单：</p>
+
+<blockquote>
+  <p>Survivals. Each live cell with 2 or 3 neighbors survives for the next generation.</p>
+
+  <p>Deaths. Each live cell with more than 3 or less than 2 neighbors dies.</p>
+
+  <p>Births. Each dead cell with exactly 3 neighbors become a live cell.</p>
+</blockquote>
+
+<p><img src="..\img\in-post\GOL\GOL (3).JPG" alt="GOL Rule" /></p>
+
+<hr />
+
+<h2 id="reverse-gol">Reverse GoL</h2>
+
+<p>但是，我们主要思考的问题是将整个过程倒过来。即现在我们有了GOL游戏的一个<strong>结束状态图</strong>，我们能不能够采用某种办法倒堆出之前任意步的<strong>起始图</strong>。（题目中我们自己限定了5步以内）</p>
+
+<p>！！ 有许多个起始图可以得到同一个结束图，所以我们的目标是只要找到一个满足条件的起始图就可以。 <strong>所以在进行验证时，不能使用起始图对比验证，因为就算不一样也可能是正确的。我们需要将预测的起始图按照规则变化到唯一的结束状态图进行对比验证</strong>。</p>
+
+<p><img src="..\in-post\GOL\GOL (4).JPG" alt="RGOL" /></p>
+
+<p>最开始我们就想利用最基本的做法，机器学习、神经网络之类的去做，但是好像根本没多少效果，而且没有仔细思考为什么这么用或者该用啥模型，胡乱用。感觉很不好。 之后我们在kaggle看到别人的解答看到了SAT Solver解答，去研究了一下，完全从机器学习、数据科学这一方面变成了算法解释问题。</p>
+
+<p><strong>所以最后我们尝试了将SAT和 U-net 结合起来试一试。</strong> SAT是一个算法问题，如果能解就一定能够得到一个正确答案，但是当step到3 4 以后，需要的时间太长，可能一个就要几十分钟。 我们们添加了U-net作为一个补偿方式，当时间过长时直接转为用pretrained u-net网络预测结果，这样在准确率个时间上都有一个平衡。 但是U-net预测的结果相当差，因为随机产生训练数据，平均算下625个格子中200多个为黑格，<strong>这意味着即使我们啥都不干，将所有格子预测为白色，平均都能够有70-80%的准确率。</strong></p>
+
+<blockquote>
+  <p>##Balance Time consumption  and  Accuracy !</p>
+</blockquote>
+
+<hr />
+
+<h2 id="sat-problem--cnf">SAT Problem / CNF</h2>
+
+<p>SAT–&gt; Boolean Satisfiability Problem</p>
+
+<p>布尔可满足性问题。简单说，有一些变量，这些变量通过逻辑与或非有组成了一些语句，找到一组变量能够满足这些所有的语句，就代表这个为题是布尔可满足的。如果找不到则就不能满足。在GOL中，625个格子就是625个变量，再根据规则生成语句，如果变量满足了这些语句，就代表有一个图可以满足条件，也就得到了预测的起始图。</p>
+
+<p><strong>总体就是定性地将RGoL看成一个定量的问题，将规则转换成CNF格式语句，之后利用SAT solver求出满足条件的解。</strong></p>
+
+<p><img src="..\img\in-post\GOL\GOL (6).JPG" alt="RGOL" /></p>
+
+<p><img src="..\img\in-post\GOL\GOL (7).JPG" alt="RGOL" /></p>
+
+<hr />
+
+<h2 id="convert-rgol-into-cnf-forms">Convert RGoL into CNF forms</h2>
+
+<p>将规则分为两大部分<strong>live clauses&amp;dead clauses</strong>.</p>
+
+<p>通过这些clauses将整个规则都覆盖到，满足这些clauses则开始说的规则也就满足了。</p>
+
+<p>转换成代码有点复杂，在kaggle看了别人的设置。</p>
+
+<p>’’’</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def dead_clauses(res, c, x):
+    # if cell is dead, there was not exactly 3 alive neighbours (56 clauses)
+    for i1 in range(0, 6):
+        for i2 in range(i1+1, 7):
+            for i3 in range(i2+1, 8):
+                a = [v(x[i]) for i in range(8)]
+                a[i1], a[i2], a[i3] = -a[i1], -a[i2], -a[i3]
+                #print(f"1/56={a}")
+                res.append(a)
+    # if cell is dead and was alive, was not 2-3 alive neighbours (28 clauses)
+    for i1 in range(0, 7):
+        for i2 in range(i1+1, 8):
+            a = [v(x[i]) if i &lt; 8 else -v(c) for i in range(9)]
+            a[i1], a[i2] = -a[i1], -a[i2]
+            res.append(a)
+
+def live_clauses(res, c, x):
+    # if cell is alive, there was less then 4 alive neighbours (70 clauses)
+    
+    #cell live      prev   dead      prev neighbours 3
+    #                       live         2 or 3
+    for i1 in range(0, 5):
+        for i2 in range(i1+1, 6):
+            for i3 in range(i2+1, 7):
+                for i4 in range(i3+1, 8):
+                    #from each 4 at least 1 was dead
+                    res.append([-v(x[i1]), -v(x[i2]), -v(x[i3]), -v(x[i4])])
+    # if cell is alive and was dead, there was more than 2 alive (less than 6 dead) neighbours (28 clauses)
+    
+    for i1 in range(0, 7):
+        for i2 in range(i1+1, 8):
+            a = [v(x[i]) if i &lt; 8 else v(c) for i in range(9) if i != i1 and i != i2]    # v(c)
+            res.append(a)
+    
+    # if cell is alive, there was more than 1 alive (less than 7 dead) neighbours (8 clauses)
+    for i1 in range(0, 8):
+        a = [v(x[i]) for i in range(8) if i != i1]
+        res.append(a)
+
+def board_clauses(board, use_opt = True):
+    res, opt1, opt2 = [], [], []
+    for i in range(SIZE):
+        for j in range(SIZE):
+            x = [((i + k % 3 - 1) % SIZE, (j + k // 3 - 1) % SIZE) for k in range(9) if k != 4]
+            #print(x)
+            if board[i,j]:
+                live_clauses(res, (i, j), x) # 106 clauses  x means coord of neighbours
+            else:
+                dead_clauses(res, (i, j), x) # 84 clauses
+                if use_opt:
+                    y = [((i + k % 5 - 2) % SIZE, (j + k // 5 - 2) % SIZE) for k in range(25)]
+                    if sum(board[ii,jj] for ii,jj in y) &lt; 1: # No alive neighbours
+                        res.append([-v((i, j))]) # Very dead space MUST stay dead! (1 clause)
+                    elif sum(board[ii,jj] for ii,jj in x) &lt; 1: # No alive neighbours
+                        opt1.append([-v((i, j))]) # Dead space should stay dead! (1 clause)
+                    elif sum(board[ii,jj] for ii,jj in x) &lt; 2: # Too few alive neighbours
+                        opt2.append([-v((i, j))]) # Dead space should stay dead! (1 clause)
+           
+    return res, opt1, opt2 '''
+</code></pre></div></div>
+
+<p><img src="..\img\in-post\GOL\GOL (8).JPG" alt="RGOL" /></p>
+
+<p><strong>一个句子规则转化为CNF：</strong></p>
+
+<p><img src="..\img\in-post\GOL\GOL (9).JPG" alt="RGOL" /></p>
+
+<p><strong>在一步中的整个过程，以一个5x5的board举例子。</strong></p>
+
+<p><img src="..\img\in-post\GOL\GOL (10).JPG" alt="process" /></p>
+
+<hr />
+
+<h2 id="combine-pycosat-and-u-net-into-one-model">Combine PycoSAT and U-net into one model</h2>
+
+<p>使用的是最基本的U-net的结构，但是效果很不好。</p>
+
+<p><img src="..\img\in-post\GOL\GOL (11).JPG" alt="U-net" /></p>
+
+<p><strong>Workflow of the Combined Model.</strong></p>
+
+<p><img src="..\img\in-post\GOL\GOL (13).JPG" alt="workflow" /></p>
+
+<p><strong>Last part is about the future work, which will never work in the future !</strong></p>
+
+<p><img src="..\img\in-post\GOL\GOL (15).JPG" alt="Future Work" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>这是一个project的任务。自行设计一个主题并定目标，之后在自己实践。 整个项目因为这个题目对我没有很感兴趣，之前根本就没有认真做或者看资料。实在是最后有一个seminar必须要讲PPT，我们在最后一个周才开始做出来的，倒数第二天还去同学家熬了夜。下次要早点准备，踏实一点了，不想搞这么很搞心态的事情。</p>
+
+:ET
