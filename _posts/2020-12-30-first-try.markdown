@@ -4,7 +4,7 @@ title:      "Solve Rev-GoL problem based on SAT"
 subtitle:   "First Try"
 date:       2020-12-30 19:00:00
 author:     "Kenzo"
-header-img: "img/GOL-header.jpg"
+header-img: "img/GOL-header.JPG"
 tags:
     - 康威生命游戏
     - Game of Life
